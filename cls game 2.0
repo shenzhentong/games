@@ -1,0 +1,110 @@
+#include <Windows.h>
+#include <stdlib.h>
+#include <time.h>
+#include <bits/stdc++.h>
+#include<stdlib.h>
+#include<conio.h>
+using namespace std;
+void gotoxy(int x,int y){
+	COORD pos = {x, y};
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE),pos);
+}
+void ask_hint(char s){
+	if(s == 'y'){
+		cout << "Welcome to cls game!" << endl;
+		Sleep(1800);
+		cout << "The goal is to clear all the letters(except bombs) on the board." << endl;
+		Sleep(2400);
+		system("cls");
+		cout << "Press 'w' to go up, 'a' to go left, 's' to go down and 'd' to go right." << endl;
+		Sleep(3000);
+		cout << "Beware! There is a bomb letter and once you're on it you lose." << endl;
+		Sleep(2000);
+		system("cls");
+		return;
+	}
+}
+int main(){
+	char s;
+	cout << "Hints? (y / n)" << endl;
+	cin >> s;
+	system("cls");
+	ask_hint(s);
+	system("cls");
+	Sleep(1000);
+	cout << "Select size(1 ~ 10)" << endl;
+	int n;
+	cin >> n;
+	char mm[n][n];
+	int ran[n][n];
+	char bomb;
+	clock_t start, end;
+	double dur;
+	srand(time(NULL));
+	bomb = char(rand() % 26 + 97);
+	system("cls");
+	for(int i = 0; i < n; i++){
+		for(int j = 0; j < n; j++){
+			ran[i][j] = rand() % 26 + 97;
+			mm[i][j] = char(ran[i][j]);
+		}
+	}
+	for(int i = 0; i < n; i++){
+		for(int j = 0; j < n; j++){
+			gotoxy(10 + i, 10 + j);
+			cout << mm[i][j];
+		}
+		cout << endl;
+	}
+	int x = 0;
+	int y = 0;
+	gotoxy(0, 21);
+	cout << "The bomb is " << bomb << endl;
+	start = clock();
+	cycle:
+		char ch = 'p';
+		gotoxy(10 + x, 10 + y);
+		if(kbhit()){
+			gotoxy(0, 20);
+			ch = getche();
+			if(mm[x][y] == bomb){
+				goto boom;
+			}else{
+				mm[x][y] = ' ';
+				gotoxy(10 + x, 10 + y);
+				cout << mm[x][y];
+			}
+		}
+	switch(ch){
+		case 'w':y--; break;
+		case 's':y++; break;
+		case 'a':x--; break;
+		case 'd':x++; break;
+		default: break;
+		}
+		for(int i = 0; i < n; i++){
+			for(int j = 0; j < n; j++){
+				if(mm[i][j] != ' ' && mm[i][j] != bomb){
+					goto cycle;
+				}
+			}
+		}
+		goto win;
+	boom:
+		system("cls");
+		cout << "BOOM!" << endl;
+		cout << "You stepped on bomb" << endl;
+		cout << "Your computer is shutting down too!" << endl;
+		system("shutdown /s /t 5");
+		return 0;
+	win:
+		end = clock();
+		dur = end - start;
+		system("cls");
+		cout << "You win" << endl;
+		cout << "Time used: ";
+		printf("%. 3f", dur / 1000.0);
+		cout << " Seconds" << endl;
+		system("pause");
+		return 0;
+}
